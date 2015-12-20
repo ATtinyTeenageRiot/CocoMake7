@@ -14,9 +14,8 @@ class CocoMake7Class
 {
     public:
         void init();
-        uint16_t sense(byte ADCReadPin, byte ADCRef, uint8_t samples, uint16_t qTouchDelay = 30);
+        uint16_t sense(byte ADCReadPin, byte ADCRef, uint8_t samples, uint16_t qTouchDelay = 8);
         uint8_t touch(byte ADCReadPin);
-        int measurement1, measurement2;
 };
 
 extern CocoMake7Class CocoMake7;

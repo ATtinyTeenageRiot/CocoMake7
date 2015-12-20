@@ -14,8 +14,9 @@ void CocoMake7Class::init()
 
     // ADC
     ADMUX = (0<<REFS0); //REFS0=0:VCC reference, =1:internal reference 1.1V
-    ADCSRA = (1<<ADEN)| (0<<ADPS2)|(1<<ADPS1)|(1<<ADPS0); //ADC enable, prescaler 8
+    //ADCSRA = (1<<ADEN)| (0<<ADPS2)|(1<<ADPS1)|(1<<ADPS0); //ADC enable, prescaler 8
     //ADCSRA = (1<<ADEN)| (1<<ADPS2)|(0<<ADPS1)|(0<<ADPS0); //ADC enable, prescaler 16
+    ADCSRA = (1<<ADEN)| (1<<ADPS2)|(1<<ADPS1)|(0<<ADPS0); //ADC enable, prescaler 64
     //ADCSRA = (1<<ADEN)| (1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0); //ADC enable, prescaler 128
 
     //while(ADCSRA & (1<<ADSC)){  } // wait for first conversion to complete . not sure if needed
@@ -26,14 +27,12 @@ void CocoMake7Class::init()
 
 uint16_t CocoMake7Class::sense(byte adcPin, byte refPin, uint8_t samples, uint16_t qTouchDelay)
 {
-    long _value = 0;
-    int muxAdc = 0;
-    int muxRef = 0;
+    long _value;
 
-    //int QTouchDelay = 20;
+    int muxRef = refPin;
+    int muxAdc = adcPin;
 
-    muxRef = refPin;
-    muxAdc = adcPin;
+    int measurement1, measurement2;
 
     for (int _counter = 0; _counter < samples; _counter ++) {
         // first measurement: adcPin low, S/H high
@@ -48,7 +47,9 @@ uint16_t CocoMake7Class::sense(byte adcPin, byte refPin, uint8_t samples, uint16
 
         ADMUX = (0<<REFS0) | (muxAdc); //  read extern condensator from adcPin
         ADCSRA |= (1<<ADSC); // start conversion
-        while (!(ADCSRA & (1 << ADIF))); // wait for conversion complete
+        while (!(ADCSRA & (1 << ADIF))) { // wait for conversion complete
+            //doPeriodical();
+        };
         ADCSRA |= (1 << ADIF); // clear ADIF
         measurement1=ADC;
 
@@ -66,7 +67,9 @@ uint16_t CocoMake7Class::sense(byte adcPin, byte refPin, uint8_t samples, uint16
 
         ADMUX = (0<<REFS0) | (muxAdc); //   read extern condensator from adcPin
         ADCSRA |= (1<<ADSC); // start conversion
-        while (!(ADCSRA & (1 << ADIF))); // wait for conversion complete
+        while (!(ADCSRA & (1 << ADIF))) { // wait for conversion complete
+            //doPeriodical();
+        };
         ADCSRA |= (1 << ADIF); // clear ADCIF
         measurement2=ADC;
 
